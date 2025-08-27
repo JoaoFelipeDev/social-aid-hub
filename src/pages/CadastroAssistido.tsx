@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,7 @@ import { Camera, Save, User, Users, Home, DollarSign } from "lucide-react";
 
 export default function CadastroAssistido() {
   const [activeTab, setActiveTab] = useState("dados-pessoais");
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
@@ -370,7 +372,7 @@ export default function CadastroAssistido() {
       </Tabs>
 
       <div className="flex gap-4 justify-end">
-        <Button variant="outline">Cancelar</Button>
+        <Button variant="outline" onClick={() => navigate("/")}>Cancelar</Button>
         <Button className="bg-success text-success-foreground hover:bg-success/90">
           <Save className="w-4 h-4 mr-2" />
           Salvar Cadastro
