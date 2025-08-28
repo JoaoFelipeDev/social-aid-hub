@@ -44,7 +44,7 @@ export const validatePhone = (phone: string): boolean => {
 };
 
 export const formatCPF = (value: string): string => {
-  const cleanValue = value.replace(/[^\d]/g, '');
+  const cleanValue = value.replace(/[^\d]/g, '').slice(0, 11); // Limita a 11 dígitos
   return cleanValue
     .replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d)/, '$1.$2')
@@ -52,7 +52,7 @@ export const formatCPF = (value: string): string => {
 };
 
 export const formatRG = (value: string): string => {
-  const cleanValue = value.replace(/[^\d]/g, '');
+  const cleanValue = value.replace(/[^\d]/g, '').slice(0, 9); // Limita a 9 dígitos
   return cleanValue
     .replace(/(\d{2})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d)/, '$1.$2')
@@ -60,7 +60,7 @@ export const formatRG = (value: string): string => {
 };
 
 export const formatPhone = (value: string): string => {
-  const cleanValue = value.replace(/[^\d]/g, '');
+  const cleanValue = value.replace(/[^\d]/g, '').slice(0, 11); // Limita a 11 dígitos
   if (cleanValue.length <= 10) {
     return cleanValue
       .replace(/(\d{2})(\d)/, '($1) $2')
@@ -73,6 +73,6 @@ export const formatPhone = (value: string): string => {
 };
 
 export const formatCEP = (value: string): string => {
-  const cleanValue = value.replace(/[^\d]/g, '');
+  const cleanValue = value.replace(/[^\d]/g, '').slice(0, 8); // Limita a 8 dígitos
   return cleanValue.replace(/(\d{5})(\d{1,3})$/, '$1-$2');
 };
