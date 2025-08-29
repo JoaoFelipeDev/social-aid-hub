@@ -344,7 +344,7 @@ export default function CadastroAssistido() {
     setShowCamera(false);
   };
 
-  const handleSave = async () => {
+  const handleSaveAssistido = async () => {
     if (!validateForm()) {
       toast({
         title: "Erro de validação",
@@ -405,6 +405,30 @@ export default function CadastroAssistido() {
         }
       }
 
+      // Inserir familiares se há dados
+      if (familiares.length > 0) {
+        const familiaresData = familiares.map(familiar => ({
+          assistido_id: assistidoData.id,
+          nome: familiar.nome,
+          data_nascimento: familiar.data_nascimento || null,
+          parentesco: familiar.parentesco,
+          escolaridade: familiar.escolaridade || null,
+          ocupacao: familiar.ocupacao || null,
+          deficiencia: familiar.deficiencia,
+          tipo_deficiencia: familiar.deficiencia ? familiar.tipo_deficiencia : null,
+          necessita_fralda: familiar.necessita_fralda,
+          tamanho_fralda: familiar.necessita_fralda ? familiar.tamanho_fralda : null
+        }));
+
+        const { error: familiaresError } = await supabase
+          .from('familiares')
+          .insert(familiaresData);
+
+        if (familiaresError) {
+          console.error('Erro ao salvar familiares:', familiaresError);
+        }
+      }
+
       toast({
         title: "Sucesso",
         description: "Assistido cadastrado com sucesso!",
@@ -421,6 +445,13 @@ export default function CadastroAssistido() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSaveFamiliares = async () => {
+    toast({
+      title: "Info",
+      description: "Para salvar familiares, complete primeiro os dados pessoais e finalize o cadastro.",
+    });
   };
 
   return (
@@ -1023,7 +1054,7 @@ export default function CadastroAssistido() {
         <Button variant="outline" onClick={() => navigate("/")}>Cancelar</Button>
         <Button 
           className="bg-success text-success-foreground hover:bg-success/90"
-          onClick={handleSave}
+          onClick={handleSaveAssistido}
           disabled={isLoading}
         >
           <Save className="w-4 h-4 mr-2" />
