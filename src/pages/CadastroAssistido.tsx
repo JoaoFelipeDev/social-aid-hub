@@ -466,10 +466,10 @@ export default function CadastroAssistido() {
                     <SelectValue placeholder="Como chegou até nós?" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="espontaneo">Espontâneo</SelectItem>
-                    <SelectItem value="oficina">Oficina</SelectItem>
-                    <SelectItem value="albergue">Albergue</SelectItem>
-                    <SelectItem value="outro">Outro</SelectItem>
+                    <SelectItem value="Espontâneo">Espontâneo</SelectItem>
+                    <SelectItem value="Oficina">Oficina</SelectItem>
+                    <SelectItem value="Albergue">Albergue</SelectItem>
+                    <SelectItem value="Outro">Outro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
