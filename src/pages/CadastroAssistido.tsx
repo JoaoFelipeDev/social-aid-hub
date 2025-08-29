@@ -42,6 +42,19 @@ interface FormData {
   observacoes: string;
 }
 
+interface Familiar {
+  id: string;
+  nome: string;
+  data_nascimento: string;
+  parentesco: string;
+  escolaridade: string;
+  ocupacao: string;
+  deficiencia: boolean;
+  tipo_deficiencia: string;
+  necessita_fralda: boolean;
+  tamanho_fralda: string;
+}
+
 export default function CadastroAssistido() {
   const [activeTab, setActiveTab] = useState("dados-pessoais");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -54,6 +67,8 @@ export default function CadastroAssistido() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [showCamera, setShowCamera] = useState(false);
+  const [familiares, setFamiliares] = useState<Familiar[]>([]);
+  const [editingFamiliar, setEditingFamiliar] = useState<Familiar | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     cpf: "",
@@ -80,6 +95,19 @@ export default function CadastroAssistido() {
     observacoes: ""
   });
 
+  // Estado para formulário de familiar
+  const [familiarForm, setFamiliarForm] = useState({
+    nome: "",
+    data_nascimento: "",
+    parentesco: "",
+    escolaridade: "",
+    ocupacao: "",
+    deficiencia: false,
+    tipo_deficiencia: "",
+    necessita_fralda: false,
+    tamanho_fralda: ""
+  });
+
   const handleInputChange = (field: keyof FormData, value: string) => {
     let formattedValue = value;
     
@@ -100,6 +128,77 @@ export default function CadastroAssistido() {
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
+  };
+
+  const handleFamiliarInputChange = (field: string, value: any) => {
+    setFamiliarForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddFamiliar = () => {
+    if (!familiarForm.nome || !familiarForm.parentesco) {
+      toast({
+        title: "Erro",
+        description: "Nome e parentesco são obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const novoFamiliar: Familiar = {
+      id: Date.now().toString(),
+      ...familiarForm
+    };
+
+    if (editingFamiliar) {
+      setFamiliares(prev => prev.map(f => f.id === editingFamiliar.id ? { ...novoFamiliar, id: editingFamiliar.id } : f));
+      setEditingFamiliar(null);
+      toast({
+        title: "Sucesso",
+        description: "Familiar atualizado com sucesso!",
+      });
+    } else {
+      setFamiliares(prev => [...prev, novoFamiliar]);
+      toast({
+        title: "Sucesso",
+        description: "Familiar adicionado com sucesso!",
+      });
+    }
+
+    // Limpar formulário
+    setFamiliarForm({
+      nome: "",
+      data_nascimento: "",
+      parentesco: "",
+      escolaridade: "",
+      ocupacao: "",
+      deficiencia: false,
+      tipo_deficiencia: "",
+      necessita_fralda: false,
+      tamanho_fralda: ""
+    });
+  };
+
+  const handleEditFamiliar = (familiar: Familiar) => {
+    setFamiliarForm({
+      nome: familiar.nome,
+      data_nascimento: familiar.data_nascimento,
+      parentesco: familiar.parentesco,
+      escolaridade: familiar.escolaridade,
+      ocupacao: familiar.ocupacao,
+      deficiencia: familiar.deficiencia,
+      tipo_deficiencia: familiar.tipo_deficiencia,
+      necessita_fralda: familiar.necessita_fralda,
+      tamanho_fralda: familiar.tamanho_fralda
+    });
+    setEditingFamiliar(familiar);
+  };
+
+  const handleRemoveFamiliar = (id: string) => {
+    setFamiliares(prev => prev.filter(f => f.id !== id));
+    toast({
+      title: "Sucesso",
+      description: "Familiar removido com sucesso!",
+    });
   };
 
   const handleBeneficioChange = (beneficio: string, checked: boolean) => {
@@ -685,13 +784,236 @@ export default function CadastroAssistido() {
             <CardHeader>
               <CardTitle>Composição Familiar</CardTitle>
               <CardDescription>
-                Funcionalidade em desenvolvimento
+                Cadastre os membros da família do assistido
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                A funcionalidade de gerenciamento de familiares será implementada em breve.
-              </p>
+            <CardContent className="space-y-6">
+              {/* Formulário de Familiar */}
+              <div className="border rounded-lg p-4 space-y-4">
+                <h3 className="font-semibold text-lg">
+                  {editingFamiliar ? "Editar Familiar" : "Adicionar Familiar"}
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="familiar-nome">Nome *</Label>
+                    <Input 
+                      id="familiar-nome"
+                      placeholder="Nome completo do familiar"
+                      value={familiarForm.nome}
+                      onChange={(e) => handleFamiliarInputChange("nome", e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="familiar-parentesco">Parentesco *</Label>
+                    <Select 
+                      value={familiarForm.parentesco} 
+                      onValueChange={(value) => handleFamiliarInputChange("parentesco", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o parentesco" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="conjuge">Cônjuge</SelectItem>
+                        <SelectItem value="filho">Filho(a)</SelectItem>
+                        <SelectItem value="pai">Pai</SelectItem>
+                        <SelectItem value="mae">Mãe</SelectItem>
+                        <SelectItem value="irmao">Irmão/Irmã</SelectItem>
+                        <SelectItem value="avo">Avô/Avó</SelectItem>
+                        <SelectItem value="neto">Neto(a)</SelectItem>
+                        <SelectItem value="tio">Tio(a)</SelectItem>
+                        <SelectItem value="sobrinho">Sobrinho(a)</SelectItem>
+                        <SelectItem value="outro">Outro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="familiar-nascimento">Data de Nascimento</Label>
+                    <Input 
+                      id="familiar-nascimento"
+                      type="date"
+                      value={familiarForm.data_nascimento}
+                      onChange={(e) => handleFamiliarInputChange("data_nascimento", e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="familiar-escolaridade">Escolaridade</Label>
+                    <Select 
+                      value={familiarForm.escolaridade} 
+                      onValueChange={(value) => handleFamiliarInputChange("escolaridade", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a escolaridade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="nao_alfabetizado">Não Alfabetizado</SelectItem>
+                        <SelectItem value="fundamental_incompleto">Fundamental Incompleto</SelectItem>
+                        <SelectItem value="fundamental_completo">Fundamental Completo</SelectItem>
+                        <SelectItem value="medio_incompleto">Médio Incompleto</SelectItem>
+                        <SelectItem value="medio_completo">Médio Completo</SelectItem>
+                        <SelectItem value="superior_incompleto">Superior Incompleto</SelectItem>
+                        <SelectItem value="superior_completo">Superior Completo</SelectItem>
+                        <SelectItem value="pos_graduacao">Pós-Graduação</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="familiar-ocupacao">Ocupação</Label>
+                    <Input 
+                      id="familiar-ocupacao"
+                      placeholder="Profissão ou ocupação"
+                      value={familiarForm.ocupacao}
+                      onChange={(e) => handleFamiliarInputChange("ocupacao", e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="checkbox" 
+                        id="familiar-deficiencia"
+                        checked={familiarForm.deficiencia}
+                        onChange={(e) => handleFamiliarInputChange("deficiencia", e.target.checked)}
+                      />
+                      <Label htmlFor="familiar-deficiencia">Possui deficiência</Label>
+                    </div>
+                    
+                    {familiarForm.deficiencia && (
+                      <div className="space-y-2">
+                        <Label htmlFor="tipo-deficiencia">Tipo de Deficiência</Label>
+                        <Input 
+                          id="tipo-deficiencia"
+                          placeholder="Descreva o tipo de deficiência"
+                          value={familiarForm.tipo_deficiencia}
+                          onChange={(e) => handleFamiliarInputChange("tipo_deficiencia", e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="checkbox" 
+                        id="familiar-fralda"
+                        checked={familiarForm.necessita_fralda}
+                        onChange={(e) => handleFamiliarInputChange("necessita_fralda", e.target.checked)}
+                      />
+                      <Label htmlFor="familiar-fralda">Necessita fralda</Label>
+                    </div>
+                    
+                    {familiarForm.necessita_fralda && (
+                      <div className="space-y-2">
+                        <Label htmlFor="tamanho-fralda">Tamanho da Fralda</Label>
+                        <Select 
+                          value={familiarForm.tamanho_fralda} 
+                          onValueChange={(value) => handleFamiliarInputChange("tamanho_fralda", value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tamanho" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="P">P - Pequeno</SelectItem>
+                            <SelectItem value="M">M - Médio</SelectItem>
+                            <SelectItem value="G">G - Grande</SelectItem>
+                            <SelectItem value="GG">GG - Extra Grande</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button onClick={handleAddFamiliar}>
+                    {editingFamiliar ? "Atualizar" : "Adicionar"} Familiar
+                  </Button>
+                  {editingFamiliar && (
+                    <Button variant="outline" onClick={() => {
+                      setEditingFamiliar(null);
+                      setFamiliarForm({
+                        nome: "",
+                        data_nascimento: "",
+                        parentesco: "",
+                        escolaridade: "",
+                        ocupacao: "",
+                        deficiencia: false,
+                        tipo_deficiencia: "",
+                        necessita_fralda: false,
+                        tamanho_fralda: ""
+                      });
+                    }}>
+                      Cancelar
+                    </Button>
+                  )}
+                </div>
+              </div>
+              
+              {/* Lista de Familiares */}
+              {familiares.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Familiares Cadastrados</h3>
+                  <div className="space-y-3">
+                    {familiares.map((familiar) => (
+                      <div key={familiar.id} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+                            <div>
+                              <p className="font-medium">{familiar.nome}</p>
+                              <p className="text-sm text-muted-foreground">{familiar.parentesco}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm">
+                                <span className="font-medium">Nascimento:</span> {familiar.data_nascimento || "Não informado"}
+                              </p>
+                              <p className="text-sm">
+                                <span className="font-medium">Escolaridade:</span> {familiar.escolaridade || "Não informada"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm">
+                                <span className="font-medium">Ocupação:</span> {familiar.ocupacao || "Não informada"}
+                              </p>
+                              {familiar.deficiencia && (
+                                <p className="text-sm text-orange-600">
+                                  Deficiência: {familiar.tipo_deficiencia}
+                                </p>
+                              )}
+                              {familiar.necessita_fralda && (
+                                <p className="text-sm text-blue-600">
+                                  Fralda: {familiar.tamanho_fralda}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2 ml-4">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleEditFamiliar(familiar)}
+                            >
+                              Editar
+                            </Button>
+                            <Button 
+                              variant="destructive" 
+                              size="sm"
+                              onClick={() => handleRemoveFamiliar(familiar.id)}
+                            >
+                              Remover
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
