@@ -726,10 +726,8 @@ export default function CadastroAssistido() {
                     <SelectValue placeholder="Selecione a situação" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="propria">Própria</SelectItem>
-                    <SelectItem value="alugada">Alugada</SelectItem>
-                    <SelectItem value="cedida">Cedida</SelectItem>
-                    <SelectItem value="financiada">Financiada</SelectItem>
+                    <SelectItem value="Própria">Própria</SelectItem>
+                    <SelectItem value="Alugada">Alugada</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
