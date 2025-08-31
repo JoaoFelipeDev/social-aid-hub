@@ -426,6 +426,13 @@ export default function CadastroAssistido() {
 
         if (familiaresError) {
           console.error('Erro ao salvar familiares:', familiaresError);
+          toast({
+            title: "Atenção",
+            description: "Erro ao salvar alguns familiares. Verifique os dados e tente novamente.",
+            variant: "destructive",
+          });
+        } else {
+          console.log('Familiares salvos com sucesso:', familiaresData);
         }
       }
 
