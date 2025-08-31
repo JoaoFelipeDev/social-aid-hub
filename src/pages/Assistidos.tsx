@@ -288,13 +288,7 @@ export default function Assistidos() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
-                                // TODO: Implementar visualização
-                                toast({
-                                  title: "Em desenvolvimento",
-                                  description: "Funcionalidade de visualização será implementada em breve.",
-                                });
-                              }}
+                              onClick={() => navigate(`/assistidos/${assistido.id}`)}
                             >
                               <Eye className="w-4 h-4" />
                             </Button>

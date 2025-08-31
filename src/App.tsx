@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CadastroAssistido from "./pages/CadastroAssistido";
 import Assistidos from "./pages/Assistidos";
+import VisualizarAssistido from "./pages/VisualizarAssistido";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/cadastro" element={<CadastroAssistido />} />
           <Route path="/assistidos" element={<Assistidos />} />
+          <Route path="/assistidos/:id" element={<VisualizarAssistido />} />
           <Route path="/acompanhamento" element={<div>Acompanhamento</div>} />
           <Route path="/visitas" element={<div>Visitas Domiciliares</div>} />
           <Route path="/documentos" element={<div>Documentos</div>} />
