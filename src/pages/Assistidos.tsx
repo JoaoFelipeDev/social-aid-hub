@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -157,181 +158,183 @@ export default function Assistidos() {
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Assistidos</h1>
-          <p className="text-muted-foreground">
-            Gerencie todos os assistidos cadastrados no sistema
-          </p>
+    <Layout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Assistidos</h1>
+            <p className="text-muted-foreground">
+              Gerencie todos os assistidos cadastrados no sistema
+            </p>
+          </div>
+          <Button onClick={() => navigate("/cadastro")} className="gap-2">
+            <UserPlus className="w-4 h-4" />
+            Novo Assistido
+          </Button>
         </div>
-        <Button onClick={() => navigate("/cadastro")} className="gap-2">
-          <UserPlus className="w-4 h-4" />
-          Novo Assistido
-        </Button>
-      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="w-5 h-5" />
-            Filtros e Busca
-          </CardTitle>
-          <CardDescription>
-            Use os filtros abaixo para encontrar assistidos específicos
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Buscar</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Nome ou CPF..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Filter className="w-5 h-5" />
+              Filtros e Busca
+            </CardTitle>
+            <CardDescription>
+              Use os filtros abaixo para encontrar assistidos específicos
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Buscar</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="Nome ou CPF..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Status</label>
+                <Select value={statusFilter} onValueChange={(value: StatusFilter) => setStatusFilter(value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="ativo">Ativo</SelectItem>
+                    <SelectItem value="inativo">Inativo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Completude</label>
+                <Select value={completudeFilter} onValueChange={(value: CompletudeFilter) => setCompletudeFilter(value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="completo">Completo</SelectItem>
+                    <SelectItem value="parcial">Parcial/Incompleto</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Status</label>
-              <Select value={statusFilter} onValueChange={(value: StatusFilter) => setStatusFilter(value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="inativo">Inativo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Completude</label>
-              <Select value={completudeFilter} onValueChange={(value: CompletudeFilter) => setCompletudeFilter(value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="completo">Completo</SelectItem>
-                  <SelectItem value="parcial">Parcial/Incompleto</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            Lista de Assistidos ({filteredAssistidos.length})
-          </CardTitle>
-          <CardDescription>
-            {loading ? "Carregando..." : `${filteredAssistidos.length} assistidos encontrados`}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-2 text-muted-foreground">Carregando assistidos...</p>
-            </div>
-          ) : filteredAssistidos.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Nenhum assistido encontrado com os filtros aplicados.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>CPF</TableHead>
-                    <TableHead>Telefone</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Completude</TableHead>
-                    <TableHead>Cadastrado em</TableHead>
-                    <TableHead>Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredAssistidos.map((assistido) => (
-                    <TableRow key={assistido.id}>
-                      <TableCell className="font-medium">
-                        {assistido.nome_completo}
-                      </TableCell>
-                      <TableCell>
-                        {formatCPF(assistido.cpf)}
-                      </TableCell>
-                      <TableCell>
-                        {assistido.celular || assistido.telefone || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {getStatusBadge(assistido.status)}
-                      </TableCell>
-                      <TableCell>
-                        {getCompletudeBadge(assistido)}
-                      </TableCell>
-                      <TableCell>
-                        {formatDate(assistido.created_at)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              // TODO: Implementar visualização
-                              toast({
-                                title: "Em desenvolvimento",
-                                description: "Funcionalidade de visualização será implementada em breve.",
-                              });
-                            }}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              // TODO: Implementar edição
-                              toast({
-                                title: "Em desenvolvimento",
-                                description: "Funcionalidade de edição será implementada em breve.",
-                              });
-                            }}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              // TODO: Implementar acompanhamento
-                              toast({
-                                title: "Em desenvolvimento",
-                                description: "Funcionalidade de acompanhamento será implementada em breve.",
-                              });
-                            }}
-                          >
-                            <Heart className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Lista de Assistidos ({filteredAssistidos.length})
+            </CardTitle>
+            <CardDescription>
+              {loading ? "Carregando..." : `${filteredAssistidos.length} assistidos encontrados`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                <p className="mt-2 text-muted-foreground">Carregando assistidos...</p>
+              </div>
+            ) : filteredAssistidos.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Nenhum assistido encontrado com os filtros aplicados.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>CPF</TableHead>
+                      <TableHead>Telefone</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Completude</TableHead>
+                      <TableHead>Cadastrado em</TableHead>
+                      <TableHead>Ações</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAssistidos.map((assistido) => (
+                      <TableRow key={assistido.id}>
+                        <TableCell className="font-medium">
+                          {assistido.nome_completo}
+                        </TableCell>
+                        <TableCell>
+                          {formatCPF(assistido.cpf)}
+                        </TableCell>
+                        <TableCell>
+                          {assistido.celular || assistido.telefone || "-"}
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(assistido.status)}
+                        </TableCell>
+                        <TableCell>
+                          {getCompletudeBadge(assistido)}
+                        </TableCell>
+                        <TableCell>
+                          {formatDate(assistido.created_at)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Implementar visualização
+                                toast({
+                                  title: "Em desenvolvimento",
+                                  description: "Funcionalidade de visualização será implementada em breve.",
+                                });
+                              }}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Implementar edição
+                                toast({
+                                  title: "Em desenvolvimento",
+                                  description: "Funcionalidade de edição será implementada em breve.",
+                                });
+                              }}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Implementar acompanhamento
+                                toast({
+                                  title: "Em desenvolvimento",
+                                  description: "Funcionalidade de acompanhamento será implementada em breve.",
+                                });
+                              }}
+                            >
+                              <Heart className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </Layout>
   );
 }
