@@ -295,13 +295,7 @@ export default function Assistidos() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
-                                // TODO: Implementar edição
-                                toast({
-                                  title: "Em desenvolvimento",
-                                  description: "Funcionalidade de edição será implementada em breve.",
-                                });
-                              }}
+                              onClick={() => navigate(`/editar-assistido/${assistido.id}`)}
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
