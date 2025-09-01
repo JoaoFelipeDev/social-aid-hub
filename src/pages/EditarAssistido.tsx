@@ -725,8 +725,14 @@ export default function EditarAssistido() {
                         </div>
                       )}
                       <div className="flex flex-col gap-2">
-                        <Button onClick={() => fileInputRef.current?.click()} leftIcon={<Upload />}>Selecionar Foto</Button>
-                        <Button variant="outline" onClick={startCamera} leftIcon={<Camera />}>Usar Câmera</Button>
+                        <Button onClick={() => fileInputRef.current?.click()}>
+                          <Upload className="mr-2 h-4 w-4" />
+                          Selecionar Foto
+                        </Button>
+                        <Button variant="outline" onClick={startCamera}>
+                          <Camera className="mr-2 h-4 w-4" />
+                          Usar Câmera
+                        </Button>
                       </div>
                     </div>
                   </div>
