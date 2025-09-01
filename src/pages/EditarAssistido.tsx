@@ -770,21 +770,51 @@ export default function EditarAssistido() {
                     </div>
                     <div>
                       <Label htmlFor="familiar_parentesco">Parentesco *</Label>
-                      <Input
-                        id="familiar_parentesco"
-                        value={familiarForm.parentesco}
-                        onChange={(e) => handleFamiliarInputChange('parentesco', e.target.value)}
-                        placeholder="Parentesco"
-                      />
+                      <Select 
+                        value={familiarForm.parentesco} 
+                        onValueChange={(value) => handleFamiliarInputChange('parentesco', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o parentesco" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="conjuge">Cônjuge</SelectItem>
+                          <SelectItem value="filho">Filho(a)</SelectItem>
+                          <SelectItem value="pai">Pai</SelectItem>
+                          <SelectItem value="mae">Mãe</SelectItem>
+                          <SelectItem value="irmao">Irmão(ã)</SelectItem>
+                          <SelectItem value="avo">Avô(ó)</SelectItem>
+                          <SelectItem value="tio">Tio(a)</SelectItem>
+                          <SelectItem value="primo">Primo(a)</SelectItem>
+                          <SelectItem value="sobrinho">Sobrinho(a)</SelectItem>
+                          <SelectItem value="genro">Genro/Nora</SelectItem>
+                          <SelectItem value="sogro">Sogro(a)</SelectItem>
+                          <SelectItem value="cunhado">Cunhado(a)</SelectItem>
+                          <SelectItem value="neto">Neto(a)</SelectItem>
+                          <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
                       <Label htmlFor="familiar_escolaridade">Escolaridade</Label>
-                      <Input
-                        id="familiar_escolaridade"
-                        value={familiarForm.escolaridade}
-                        onChange={(e) => handleFamiliarInputChange('escolaridade', e.target.value)}
-                        placeholder="Escolaridade"
-                      />
+                      <Select 
+                        value={familiarForm.escolaridade} 
+                        onValueChange={(value) => handleFamiliarInputChange('escolaridade', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a escolaridade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="nao_alfabetizado">Não Alfabetizado</SelectItem>
+                          <SelectItem value="fundamental_incompleto">Ensino Fundamental Incompleto</SelectItem>
+                          <SelectItem value="fundamental_completo">Ensino Fundamental Completo</SelectItem>
+                          <SelectItem value="medio_incompleto">Ensino Médio Incompleto</SelectItem>
+                          <SelectItem value="medio_completo">Ensino Médio Completo</SelectItem>
+                          <SelectItem value="superior_incompleto">Ensino Superior Incompleto</SelectItem>
+                          <SelectItem value="superior_completo">Ensino Superior Completo</SelectItem>
+                          <SelectItem value="pos_graduacao">Pós-graduação</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
                       <Label htmlFor="familiar_ocupacao">Ocupação</Label>
