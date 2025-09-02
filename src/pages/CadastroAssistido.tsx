@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Camera, Save, User, Users, Home, DollarSign, Upload } from "lucide-react";
-import { validateCPF, validateRG, validatePhone, formatCPF, formatRG, formatPhone, formatCEP } from "@/lib/validations";
+import { validateCPF, validateRG, validatePhone, formatCPF, formatRG, formatPhone, formatCEP, formatCurrency, parseCurrency } from "@/lib/validations";
 
 interface FormData {
   // Dados pessoais
@@ -120,6 +120,8 @@ export default function CadastroAssistido() {
       formattedValue = formatPhone(value);
     } else if (field === "cep") {
       formattedValue = formatCEP(value);
+    } else if (field === "renda_familiar") {
+      formattedValue = formatCurrency(value);
     }
     
     setFormData(prev => ({ ...prev, [field]: formattedValue }));
@@ -395,7 +397,7 @@ export default function CadastroAssistido() {
           .insert({
             assistido_id: assistidoData.id,
             situacao_profissional: formData.situacao_profissional || null,
-            renda_familiar: formData.renda_familiar ? parseFloat(formData.renda_familiar.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
+            renda_familiar: formData.renda_familiar ? parseCurrency(formData.renda_familiar) : null,
             beneficios_recebidos: formData.beneficios_recebidos.length > 0 ? formData.beneficios_recebidos : null,
             observacoes: formData.observacoes || null
           });

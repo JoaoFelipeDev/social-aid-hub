@@ -387,7 +387,10 @@ export default function VisualizarAssistido() {
                       <label className="text-sm font-medium text-muted-foreground">Renda Familiar</label>
                       <p className="font-medium">
                         {assistido.perfil_socioeconomico[0].renda_familiar 
-                          ? `R$ ${assistido.perfil_socioeconomico[0].renda_familiar}`
+                          ? new Intl.NumberFormat('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            }).format(assistido.perfil_socioeconomico[0].renda_familiar)
                           : "Não informado"
                         }
                       </p>

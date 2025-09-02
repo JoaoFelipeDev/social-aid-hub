@@ -76,3 +76,26 @@ export const formatCEP = (value: string): string => {
   const cleanValue = value.replace(/[^\d]/g, '').slice(0, 8); // Limita a 8 dígitos
   return cleanValue.replace(/(\d{5})(\d{1,3})$/, '$1-$2');
 };
+
+// Currency formatting
+export const formatCurrency = (value: string): string => {
+  // Remove all non-numeric characters
+  const numericValue = value.replace(/[^\d]/g, '');
+  
+  if (!numericValue) return '';
+  
+  // Convert to number and format
+  const number = parseInt(numericValue) / 100;
+  
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2
+  }).format(number);
+};
+
+export const parseCurrency = (value: string): number => {
+  // Remove currency symbols and convert comma to dot
+  const numericValue = value.replace(/[^\d,]/g, '').replace(',', '.');
+  return parseFloat(numericValue) || 0;
+};

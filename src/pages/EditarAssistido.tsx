@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Camera, Save, User, Users, Home, DollarSign, Upload, ArrowLeft } from "lucide-react";
-import { validateCPF, validateRG, validatePhone, formatCPF, formatRG, formatPhone, formatCEP } from "@/lib/validations";
+import { validateCPF, validateRG, validatePhone, formatCPF, formatRG, formatPhone, formatCEP, formatCurrency, parseCurrency } from "@/lib/validations";
 import Layout from "@/components/Layout";
 
 interface FormData {
@@ -157,7 +157,7 @@ export default function EditarAssistido() {
         cep: data.cep || '',
         situacao_moradia: data.situacao_moradia || '',
         situacao_profissional: data.perfil_socioeconomico?.[0]?.situacao_profissional || '',
-        renda_familiar: data.perfil_socioeconomico?.[0]?.renda_familiar?.toString() || '',
+        renda_familiar: data.perfil_socioeconomico?.[0]?.renda_familiar ? formatCurrency((data.perfil_socioeconomico[0].renda_familiar * 100).toString()) : '',
         beneficios_recebidos: data.perfil_socioeconomico?.[0]?.beneficios_recebidos || [],
         observacoes: data.perfil_socioeconomico?.[0]?.observacoes || ''
       });
@@ -195,6 +195,8 @@ export default function EditarAssistido() {
       formattedValue = formatPhone(value);
     } else if (field === "cep") {
       formattedValue = formatCEP(value);
+    } else if (field === "renda_familiar") {
+      formattedValue = formatCurrency(value);
     }
     
     setFormData(prev => ({ ...prev, [field]: formattedValue }));
@@ -469,7 +471,7 @@ export default function EditarAssistido() {
           .upsert({
             assistido_id: id,
             situacao_profissional: formData.situacao_profissional || null,
-            renda_familiar: formData.renda_familiar ? parseFloat(formData.renda_familiar.replace(/[^\d.,]/g, '').replace(',', '.')) : null,
+            renda_familiar: formData.renda_familiar ? parseCurrency(formData.renda_familiar) : null,
             beneficios_recebidos: formData.beneficios_recebidos.length > 0 ? formData.beneficios_recebidos : null,
             observacoes: formData.observacoes || null
           }, {
