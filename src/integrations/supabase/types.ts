@@ -274,7 +274,7 @@ export type Database = {
           {
             foreignKeyName: "perfil_socioeconomico_assistido_id_fkey"
             columns: ["assistido_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "assistidos"
             referencedColumns: ["id"]
           },
