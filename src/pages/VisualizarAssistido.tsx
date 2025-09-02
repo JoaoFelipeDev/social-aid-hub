@@ -34,7 +34,7 @@ interface AssistidoCompleto {
   created_at: string;
   // Relacionamentos
   familiares: any[];
-  perfil_socioeconomico: any[];
+  perfil_socioeconomico: any | null;
   acompanhamento_assistencial: any[];
   retiradas_cesta: any[];
   visitas_domiciliares: any[];
@@ -381,16 +381,16 @@ export default function VisualizarAssistido() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {assistido.perfil_socioeconomico?.length > 0 ? (
+                {assistido.perfil_socioeconomico ? (
                   <div className="space-y-2">
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Renda Familiar</label>
                       <p className="font-medium">
-                        {assistido.perfil_socioeconomico[0].renda_familiar 
+                        {assistido.perfil_socioeconomico.renda_familiar 
                           ? new Intl.NumberFormat('pt-BR', {
                               style: 'currency',
                               currency: 'BRL'
-                            }).format(assistido.perfil_socioeconomico[0].renda_familiar)
+                            }).format(assistido.perfil_socioeconomico.renda_familiar)
                           : "Não informado"
                         }
                       </p>
@@ -398,7 +398,7 @@ export default function VisualizarAssistido() {
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Situação Profissional</label>
                       <p className="font-medium">
-                        {assistido.perfil_socioeconomico[0].situacao_profissional || "Não informado"}
+                        {assistido.perfil_socioeconomico.situacao_profissional || "Não informado"}
                       </p>
                     </div>
                   </div>

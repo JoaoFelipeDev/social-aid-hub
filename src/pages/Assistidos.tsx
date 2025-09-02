@@ -76,7 +76,7 @@ export default function Assistidos() {
       const processedData = assistidosData?.map(assistido => ({
         ...assistido,
         familiares_count: assistido.familiares?.length || 0,
-        perfil_socioeconomico_exists: (assistido.perfil_socioeconomico?.length || 0) > 0
+        perfil_socioeconomico_exists: !!assistido.perfil_socioeconomico
       })) || [];
 
       setAssistidos(processedData);
