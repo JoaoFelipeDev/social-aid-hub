@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarDays, Heart, Plus, Save, ArrowLeft, User, Package } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CalendarDays, Heart, Plus, Save, ArrowLeft, User, Package, Search } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface AssistidoData {
@@ -18,6 +19,16 @@ interface AssistidoData {
   cpf: string;
   telefone: string | null;
   celular: string | null;
+}
+
+interface AssistidoListItem {
+  id: string;
+  nome_completo: string;
+  cpf: string;
+  telefone: string | null;
+  celular: string | null;
+  status: string | null;
+  tem_acompanhamento: boolean;
 }
 
 interface AcompanhamentoData {
@@ -41,6 +52,10 @@ export default function Acompanhamento() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
+  // Estados para lista de assistidos
+  const [assistidosList, setAssistidosList] = useState<AssistidoListItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  
   const [formData, setFormData] = useState<Partial<AcompanhamentoData>>({
     tipo_cesta: "",
     periodicidade: "",
@@ -51,8 +66,49 @@ export default function Acompanhamento() {
   useEffect(() => {
     if (assistidoId) {
       fetchAssistidoAndAcompanhamento();
+    } else {
+      fetchAssistidosList();
     }
   }, [assistidoId]);
+
+  const fetchAssistidosList = async () => {
+    try {
+      setLoading(true);
+      
+      // Buscar assistidos com informação se têm acompanhamento
+      const { data: assistidosData, error } = await supabase
+        .from('assistidos')
+        .select(`
+          id,
+          nome_completo,
+          cpf,
+          telefone,
+          celular,
+          status,
+          acompanhamento_assistencial(id)
+        `)
+        .eq('status', 'Ativo')
+        .order('nome_completo');
+
+      if (error) throw error;
+
+      const processedData = assistidosData?.map(assistido => ({
+        ...assistido,
+        tem_acompanhamento: assistido.acompanhamento_assistencial?.length > 0
+      })) || [];
+
+      setAssistidosList(processedData);
+    } catch (error) {
+      console.error('Erro ao carregar assistidos:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar lista de assistidos",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchAssistidoAndAcompanhamento = async () => {
     if (!assistidoId) return;
@@ -155,22 +211,113 @@ export default function Acompanhamento() {
     }
   };
 
+  const formatCPF = (cpf: string) => {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  };
+
+  const filteredAssistidos = assistidosList.filter(assistido =>
+    assistido.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    assistido.cpf.includes(searchTerm.replace(/[^\d]/g, ''))
+  );
+
+  // Se não tem assistido específico, mostrar lista
   if (!assistidoId) {
     return (
       <Layout>
-        <div className="max-w-2xl mx-auto py-8">
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold flex items-center gap-2">
+                <Heart className="w-8 h-8 text-primary" />
+                Acompanhamento Assistencial
+              </h1>
+              <p className="text-muted-foreground">
+                Selecione um assistido para gerenciar seu acompanhamento
+              </p>
+            </div>
+          </div>
+
           <Card>
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h2 className="text-xl font-semibold mb-2">Assistido não especificado</h2>
-                <p className="text-muted-foreground mb-4">
-                  Para acessar o acompanhamento, você precisa selecionar um assistido.
-                </p>
-                <Button onClick={() => navigate('/assistidos')}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar para Assistidos
-                </Button>
+            <CardHeader>
+              <CardTitle>Buscar Assistido</CardTitle>
+              <CardDescription>
+                Encontre um assistido para iniciar ou editar seu acompanhamento
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="Nome ou CPF do assistido..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                {loading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                    <p className="mt-2 text-muted-foreground">Carregando assistidos...</p>
+                  </div>
+                ) : filteredAssistidos.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">
+                      {searchTerm ? "Nenhum assistido encontrado." : "Nenhum assistido ativo cadastrado."}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nome</TableHead>
+                          <TableHead>CPF</TableHead>
+                          <TableHead>Telefone</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Ações</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredAssistidos.map((assistido) => (
+                          <TableRow key={assistido.id}>
+                            <TableCell className="font-medium">
+                              {assistido.nome_completo}
+                            </TableCell>
+                            <TableCell>
+                              {formatCPF(assistido.cpf)}
+                            </TableCell>
+                            <TableCell>
+                              {assistido.celular || assistido.telefone || "-"}
+                            </TableCell>
+                            <TableCell>
+                              {assistido.tem_acompanhamento ? (
+                                <Badge className="bg-green-100 text-green-800">
+                                  Com Acompanhamento
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary">
+                                  Sem Acompanhamento
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => navigate(`/acompanhamento?assistido=${assistido.id}`)}
+                              >
+                                <Heart className="w-4 h-4 mr-2" />
+                                {assistido.tem_acompanhamento ? "Editar" : "Criar"}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
