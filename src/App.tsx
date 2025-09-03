@@ -10,6 +10,7 @@ import CadastroAssistido from "./pages/CadastroAssistido";
 import Assistidos from "./pages/Assistidos";
 import VisualizarAssistido from "./pages/VisualizarAssistido";
 import EditarAssistido from "./pages/EditarAssistido";
+import Acompanhamento from "./pages/Acompanhamento";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@ const App = () => (
           <Route path="/assistidos/:id" element={<VisualizarAssistido />} />
           <Route path="/assistidos/:id/editar" element={<EditarAssistido />} />
           <Route path="/editar-assistido/:id" element={<EditarAssistido />} />
-          <Route path="/acompanhamento" element={<div>Acompanhamento</div>} />
+          <Route path="/acompanhamento" element={<Acompanhamento />} />
           <Route path="/visitas" element={<div>Visitas Domiciliares</div>} />
           <Route path="/documentos" element={<div>Documentos</div>} />
           <Route path="/cestas" element={<div>Montagem de Cestas</div>} />

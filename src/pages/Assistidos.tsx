@@ -302,13 +302,7 @@ export default function Assistidos() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
-                                // TODO: Implementar acompanhamento
-                                toast({
-                                  title: "Em desenvolvimento",
-                                  description: "Funcionalidade de acompanhamento será implementada em breve.",
-                                });
-                              }}
+                              onClick={() => navigate(`/acompanhamento?assistido=${assistido.id}`)}
                             >
                               <Heart className="w-4 h-4" />
                             </Button>
