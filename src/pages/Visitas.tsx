@@ -40,7 +40,7 @@ interface Assistido {
 
 export default function Visitas() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedAssistido, setSelectedAssistido] = useState<string>("");
+  const [selectedAssistido, setSelectedAssistido] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     assistido_id: "",
@@ -71,7 +71,7 @@ export default function Visitas() {
         `)
         .order("data_visita", { ascending: false });
 
-      if (selectedAssistido) {
+      if (selectedAssistido && selectedAssistido !== "all") {
         query = query.eq("assistido_id", selectedAssistido);
       }
 
@@ -266,7 +266,7 @@ export default function Visitas() {
               <SelectValue placeholder="Filtrar por assistido" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os assistidos</SelectItem>
+              <SelectItem value="all">Todos os assistidos</SelectItem>
               {assistidos.map((assistido) => (
                 <SelectItem key={assistido.id} value={assistido.id}>
                   {assistido.nome_completo}
@@ -287,7 +287,7 @@ export default function Visitas() {
               <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Nenhuma visita encontrada</h3>
               <p className="text-muted-foreground mb-4">
-                {searchTerm || selectedAssistido 
+                {searchTerm || (selectedAssistido && selectedAssistido !== "all") 
                   ? "Nenhuma visita corresponde aos filtros aplicados."
                   : "Comece registrando a primeira visita domiciliar."
                 }
