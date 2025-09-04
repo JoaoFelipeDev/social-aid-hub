@@ -12,6 +12,7 @@ import VisualizarAssistido from "./pages/VisualizarAssistido";
 import EditarAssistido from "./pages/EditarAssistido";
 import Acompanhamento from "./pages/Acompanhamento";
 import Visitas from "./pages/Visitas";
+import Documentos from "./pages/Documentos";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ const App = () => (
           <Route path="/editar-assistido/:id" element={<EditarAssistido />} />
           <Route path="/acompanhamento" element={<Acompanhamento />} />
           <Route path="/visitas" element={<Visitas />} />
-          <Route path="/documentos" element={<div>Documentos</div>} />
+          <Route path="/documentos" element={<Documentos />} />
           <Route path="/cestas" element={<div>Montagem de Cestas</div>} />
           <Route path="/relatorios" element={<div>Relatórios</div>} />
           <Route path="/admin" element={<div>Administração</div>} />
