@@ -1,5 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { UserMenu } from "@/components/UserMenu";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -19,9 +20,7 @@ export default function Layout({ children }: LayoutProps) {
             </div>
             
             <div className="flex items-center gap-3">
-              <div className="text-sm text-muted-foreground">
-                Olá, <span className="font-medium">Admin</span>
-              </div>
+              <UserMenu />
             </div>
           </header>
 

@@ -4,7 +4,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import CadastroAssistido from "./pages/CadastroAssistido";
 import Assistidos from "./pages/Assistidos";
@@ -26,19 +28,103 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/cadastro" element={<CadastroAssistido />} />
-          <Route path="/assistidos" element={<Assistidos />} />
-          <Route path="/assistidos/:id" element={<VisualizarAssistido />} />
-          <Route path="/assistidos/:id/editar" element={<EditarAssistido />} />
-          <Route path="/editar-assistido/:id" element={<EditarAssistido />} />
-          <Route path="/acompanhamento" element={<Acompanhamento />} />
-          <Route path="/visitas" element={<Visitas />} />
-          <Route path="/documentos" element={<Documentos />} />
-          <Route path="/cestas" element={<Cestas />} />
-          <Route path="/relatorios" element={<Relatorios />} />
-          <Route path="/admin" element={<Admin />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/auth" element={<Auth />} />
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cadastro" 
+            element={
+              <ProtectedRoute>
+                <CadastroAssistido />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/assistidos" 
+            element={
+              <ProtectedRoute>
+                <Assistidos />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/assistidos/:id" 
+            element={
+              <ProtectedRoute>
+                <VisualizarAssistido />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/assistidos/:id/editar" 
+            element={
+              <ProtectedRoute>
+                <EditarAssistido />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/editar-assistido/:id" 
+            element={
+              <ProtectedRoute>
+                <EditarAssistido />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/acompanhamento" 
+            element={
+              <ProtectedRoute>
+                <Acompanhamento />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/visitas" 
+            element={
+              <ProtectedRoute>
+                <Visitas />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/documentos" 
+            element={
+              <ProtectedRoute>
+                <Documentos />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/cestas" 
+            element={
+              <ProtectedRoute>
+                <Cestas />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/relatorios" 
+            element={
+              <ProtectedRoute>
+                <Relatorios />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
