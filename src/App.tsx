@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -28,102 +27,53 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/auth" element={<Auth />} />
           <Route 
             path="/" 
-            element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } 
+            element={<Index />} 
           />
           <Route 
             path="/cadastro" 
-            element={
-              <ProtectedRoute>
-                <CadastroAssistido />
-              </ProtectedRoute>
-            } 
+            element={<CadastroAssistido />} 
           />
           <Route 
             path="/assistidos" 
-            element={
-              <ProtectedRoute>
-                <Assistidos />
-              </ProtectedRoute>
-            } 
+            element={<Assistidos />} 
           />
           <Route 
             path="/assistidos/:id" 
-            element={
-              <ProtectedRoute>
-                <VisualizarAssistido />
-              </ProtectedRoute>
-            } 
+            element={<VisualizarAssistido />} 
           />
           <Route 
             path="/assistidos/:id/editar" 
-            element={
-              <ProtectedRoute>
-                <EditarAssistido />
-              </ProtectedRoute>
-            } 
+            element={<EditarAssistido />} 
           />
           <Route 
             path="/editar-assistido/:id" 
-            element={
-              <ProtectedRoute>
-                <EditarAssistido />
-              </ProtectedRoute>
-            } 
+            element={<EditarAssistido />} 
           />
           <Route 
             path="/acompanhamento" 
-            element={
-              <ProtectedRoute>
-                <Acompanhamento />
-              </ProtectedRoute>
-            } 
+            element={<Acompanhamento />} 
           />
           <Route 
             path="/visitas" 
-            element={
-              <ProtectedRoute>
-                <Visitas />
-              </ProtectedRoute>
-            } 
+            element={<Visitas />} 
           />
           <Route 
             path="/documentos" 
-            element={
-              <ProtectedRoute>
-                <Documentos />
-              </ProtectedRoute>
-            } 
+            element={<Documentos />} 
           />
           <Route 
             path="/cestas" 
-            element={
-              <ProtectedRoute>
-                <Cestas />
-              </ProtectedRoute>
-            } 
+            element={<Cestas />} 
           />
           <Route 
             path="/relatorios" 
-            element={
-              <ProtectedRoute>
-                <Relatorios />
-              </ProtectedRoute>
-            } 
+            element={<Relatorios />} 
           />
           <Route 
             path="/admin" 
-            element={
-              <ProtectedRoute>
-                <Admin />
-              </ProtectedRoute>
-            } 
+            element={<Admin />} 
           />
           <Route path="*" element={<NotFound />} />
         </Routes>

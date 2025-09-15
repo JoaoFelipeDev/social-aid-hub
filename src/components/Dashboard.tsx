@@ -5,63 +5,108 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Search, UserPlus, Users, Calendar, TrendingUp } from "lucide-react";
 
-// Mock data for demonstration
-const assistidos = [
-  {
-    id: 1,
-    nome: "Maria Silva Santos",
-    cpf: "123.456.789-00",
-    status: "Ativo",
-    ultimaCesta: "15/12/2024",
-  },
-  {
-    id: 2,
-    nome: "João Oliveira Costa",
-    cpf: "987.654.321-00",
-    status: "Ativo", 
-    ultimaCesta: "10/12/2024",
-  },
-  {
-    id: 3,
-    nome: "Ana Paula Ferreira",
-    cpf: "456.789.123-00",
-    status: "Inativo",
-    ultimaCesta: "28/11/2024",
-  },
-];
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-const stats = [
-  {
-    title: "Total de Assistidos",
-    value: "1,247",
-    description: "+12% em relação ao mês anterior",
-    icon: Users,
-    trend: "up"
-  },
-  {
-    title: "Cestas Entregues (Mês)",
-    value: "342",
-    description: "Meta: 400 cestas",
-    icon: Calendar,
-    trend: "up"
-  },
-  {
-    title: "Visitas Realizadas",
-    value: "89",
-    description: "+5% em relação ao mês anterior",
-    icon: TrendingUp,
-    trend: "up"
-  },
-];
+interface Assistido {
+  id: string;
+  nome_completo: string;
+  cpf: string;
+  status: string | null;
+}
+
+interface Cesta {
+  id: string;
+  data_retirada: string;
+}
+
+interface Visita {
+  id: string;
+  data_visita: string;
+}
 
 export function Dashboard() {
+  const [assistidos, setAssistidos] = useState<Assistido[]>([]);
+  const [cestas, setCestas] = useState<Cesta[]>([]);
+  const [visitas, setVisitas] = useState<Visita[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+  fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    setLoading(true);
+    // Assistidos
+    const { data: assistidosData, error: assistidosError } = await supabase
+      .from("assistidos")
+      .select("id, nome_completo, cpf, status")
+      .order("created_at", { ascending: false });
+    if (!assistidosError && assistidosData) {
+      setAssistidos(assistidosData);
+    }
+
+    // Cestas entregues no mês atual
+    const now = new Date();
+    const primeiroDia = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+    const ultimoDia = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+    const { data: cestasData, error: cestasError } = await supabase
+      .from("retiradas_cesta")
+      .select("id, data_retirada")
+      .gte("data_retirada", primeiroDia)
+      .lte("data_retirada", ultimoDia);
+    if (!cestasError && cestasData) {
+      setCestas(cestasData);
+    }
+
+    // Visitas realizadas no mês atual
+    const { data: visitasData, error: visitasError } = await supabase
+      .from("visitas_domiciliares")
+      .select("id, data_visita")
+      .gte("data_visita", primeiroDia)
+      .lte("data_visita", ultimoDia);
+    if (!visitasError && visitasData) {
+      setVisitas(visitasData);
+    }
+
+    setLoading(false);
+  };
 
   const filteredAssistidos = assistidos.filter(
     (assistido) =>
-      assistido.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assistido.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
       assistido.cpf.includes(searchTerm)
   );
+
+  // Stats
+  const totalAssistidos = assistidos.length;
+  const ativos = assistidos.filter(a => a.status === "Ativo").length;
+  const inativos = assistidos.filter(a => a.status === "Inativo").length;
+
+  const stats = [
+    {
+      title: "Total de Assistidos",
+      value: totalAssistidos.toLocaleString("pt-BR"),
+      description: `${ativos} ativos, ${inativos} inativos`,
+      icon: Users,
+      trend: "up"
+    },
+    {
+      title: "Cestas Entregues (Mês)",
+      value: cestas.length.toLocaleString("pt-BR"),
+      description: "Meta: 400 cestas",
+      icon: Calendar,
+      trend: "up"
+    },
+    {
+      title: "Visitas Realizadas",
+      value: visitas.length.toLocaleString("pt-BR"),
+      description: "No mês atual",
+      icon: TrendingUp,
+      trend: "up"
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -73,7 +118,6 @@ export function Dashboard() {
             Bem-vindo ao sistema de gestão social
           </p>
         </div>
-        
         <Button className="w-fit" size="lg">
           <UserPlus className="w-4 h-4 mr-2" />
           Cadastrar Novo Assistido
@@ -129,13 +173,14 @@ export function Dashboard() {
               <div>Última Cesta</div>
               <div>Ações</div>
             </div>
-            
-            {filteredAssistidos.map((assistido) => (
+            {loading ? (
+              <div className="p-4 text-center text-muted-foreground">Carregando...</div>
+            ) : filteredAssistidos.map((assistido) => (
               <div
                 key={assistido.id}
                 className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 border-b hover:bg-muted/30 transition-colors"
               >
-                <div className="font-medium">{assistido.nome}</div>
+                <div className="font-medium">{assistido.nome_completo}</div>
                 <div className="text-muted-foreground">{assistido.cpf}</div>
                 <div>
                   <Badge 
@@ -145,7 +190,7 @@ export function Dashboard() {
                     {assistido.status}
                   </Badge>
                 </div>
-                <div className="text-muted-foreground">{assistido.ultimaCesta}</div>
+                <div className="text-muted-foreground">-</div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm">Ver</Button>
                   <Button variant="outline" size="sm">Editar</Button>

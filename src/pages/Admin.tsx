@@ -8,7 +8,7 @@ import { AuditLogs } from "@/components/admin/AuditLogs";
 import { SystemInfo } from "@/components/admin/SystemInfo";
 
 export default function Admin() {
-  const [activeSection, setActiveSection] = useState("usuarios");
+  const [activeSection, setActiveSection] = useState("configuracoes");
 
   return (
     <Layout>
@@ -23,16 +23,8 @@ export default function Admin() {
         <Tabs value={activeSection} onValueChange={setActiveSection} className="space-y-6">
           <AdminTabs activeSection={activeSection} onSectionChange={setActiveSection} />
 
-          <TabsContent value="usuarios" className="space-y-6">
-            <UserManagement />
-          </TabsContent>
-
           <TabsContent value="configuracoes" className="space-y-6">
             <SystemSettings />
-          </TabsContent>
-
-          <TabsContent value="auditoria" className="space-y-6">
-            <AuditLogs />
           </TabsContent>
 
           <TabsContent value="sistema" className="space-y-6">
