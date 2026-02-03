@@ -9,7 +9,6 @@ interface AdminTabsProps {
 }
 
 const tabItems = [
-  { value: "configuracoes", label: "Configurações", icon: Settings },
   { value: "sistema", label: "Sistema", icon: Database },
 ];
 
